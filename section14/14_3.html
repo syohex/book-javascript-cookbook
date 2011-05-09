@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<head>
+<title>Validating Forms</title>
+<style type="text/css" media="screen">
+[role="alert"]
+{
+  background-color: #ffcccc;
+  font-weight: bold;
+  padding: 5px;
+  border: 1px dashed #000;
+}
+div
+{
+  margin: 10px 0;
+  padding: 5px;
+  width: 400px;
+  background-color: #ffffff;
+}
+</style>
+<script type="text/javascript">
+window.onload = function () {
+    document.getElementById("thirdfield").onchange = validateField;
+    document.getElementById("firstfield").onblur = mandatoryField;
+    document.getElementById("testform").onsubmit = finalCheck;
+};
+
+function removeAlert () {
+    var msg = document.getElementById("msg");
+    if (msg) {
+        document.body.removeChild(msg);
+    }
+}
+
+function resetField(elem) {
+    elem.parentNode.setAttribute("style", "background-color: #ffffff");
+    var valid = elem.getAttribute("aria-invalid");
+    if (valid)
+        elem.removeAttribute("aria-invalid");
+}
+
+function badField(elem) {
+    elem.parentNode.setAttribute("style", "background: #ffeeee");
+    elem.setAttribute("aria-invalid", "true");
+}
+
+function generateAlert(txt) {
+    var txtNd = document.createTextNode(txt);
+    msg = document.createElement("div");
+    msg.setAttribute("role", "alert");
+    msg.setAttribute("id", "msg");
+    msg.setAttribute("class", "alert");
+
+    msg.appendChild(txtNd);
+    document.body.appendChild(msg);
+}
+
+function validateField () {
+    removeAlert();
+
+    if (!isNaN(parseFloat(this.value))) {
+        resetField(this);
+    } else {
+        badField(this);
+        generateAlert("You enterd an invalid value in Third Field."
+                      + "Only numeric values such as 105 or 3.54 are allowd");
+    }
+}
+
+function mandatoryField () {
+    removeAlert();
+
+    if (this.value.length > 0) {
+        resetField(this);
+    } else {
+        badField(this);
+        generateAlert("You must enter a value into First Field");
+    }
+}
+
+function finalCheck () {
+    removeAlert();
+
+    var fields = document.querySelectorAll("[aria-invalid='true']");
+    if (fields.length > 0 ){
+        generateAlert("you have incorrect fields entries that must be"
+                      + " fixed before you can submit this form");
+        return false;
+    }
+}
+</script>
+<body>
+<form id="testform">
+  <div>
+    <label for="firstfield">*First Field:</label><br />
+    <input id="firstfield" name="firstfield"
+           type="text" aria-required="true" />
+  </div>
+    <label for="secondfield">Second Field:</label><br />
+    <input id="secondfield" name="secondfield" type="text" />
+  <div>
+    <label for="thirdfield">Third Field:</label><br />
+    <input id="thirdfield" name="thirdfield" type="text" />
+  </div>
+  <div>
+    <label for="fourthfield">Fourth Field:</label><br />
+    <input id="fourthfield" name="fourthfield" type="text" />
+  </div>
+  <input type="submit" value="Send Data" />
+</form>
+</body>
+</head>
